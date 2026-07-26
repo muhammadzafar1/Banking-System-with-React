@@ -1,36 +1,38 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const handleLogin = (e) => {
 
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
     e.preventDefault();
 
-    const storedUser =  JSON.parse(localStorage.getItem("user"));
-     
+    const users = JSON.parse(localStorage.getItem("users")) || [];
 
-    if (
-      storedUser &&
-      email === storedUser.email &&
-      password === storedUser.password
-    ) {
+    const user = users.find(
+      (u) => u.email === email && u.password === password
+    );
+
+    if (user) {
+      // Login user ka email save karo
+      localStorage.setItem("loggedInEmail", user.email);
+
       alert("Login Successful");
-    }
-    else {
+      navigate("/dashboard");
+    } else {
       alert("Invalid Email or Password");
     }
-
-  }
-
-
-
+  };
 
   return (
     <div className="min-h-screen bg-zinc-600 flex justify-center items-center">
       <form
         onSubmit={handleLogin}
-       className="bg-zinc-800 w-[30%] min-w-[380px] h-[90%] rounded-2xl shadow-2xl flex flex-col items-center justify-center gap-8 px-10 py-12">
+        className="bg-zinc-800 w-[30%] min-w-[380px] h-[90%] rounded-2xl shadow-2xl flex flex-col items-center justify-center gap-8 px-10 py-12"
+      >
 
         {/* Heading */}
         <h1 className="text-4xl font-bold text-white font-sans">
@@ -51,7 +53,6 @@ const Login = () => {
           <input
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-
             type="password"
             placeholder="Enter your password"
             className="w-full h-12 px-4 text-white placeholder:text-gray-400 bg-transparent border border-gray-500 rounded-lg outline-none focus:border-blue-500"
@@ -71,7 +72,7 @@ const Login = () => {
         <p className="text-white font-sans">
           Don't have an account yet?{" "}
           <Link
-            to="/signup"
+            to="/"
             className="text-blue-400 hover:underline"
           >
             Register
